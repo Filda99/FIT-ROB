@@ -55,7 +55,7 @@ class Simulator:
 
         self.btnTest = tk.Button(self.screen, text="Test")  # Creation of the button "Test"
         self.btnTest.pack(fill=tk.X, side=tk.BOTTOM)  # adding the button to the window
-        self.btnTest.bind('<Button-1>', self.btn_test_event)  # Define the function to call when the button is pressed
+        # self.btnTest.bind('<Button-1>', self.btn_test_event)  # Define the function to call when the button is pressed
 
         """ ***** The checkboxes and radio-buttons ***** """
 
@@ -261,63 +261,65 @@ class Simulator:
         self.canvas.delete("all")  # we start by removing the old display
 
         # to draw the map, it is either the cost map of the probability map (obstacles map)
-        if self.map_to_display.get() == 1:
-            drawing.draw_grid_map(self.canvas, self.map)
-        elif self.map_to_display.get() == 2:
-            drawing.draw_cost_map(self.canvas, self.cost_map)
+        # if self.map_to_display.get() == 1:
+        #     drawing.draw_grid_map(self.canvas, self.map)
+        # elif self.map_to_display.get() == 2:
+        #     drawing.draw_cost_map(self.canvas, self.cost_map)
 
         # to display for text over the user interface (time, how to...)
         self.add_text()
 
         # to draw the environment, note that the map is computed from the environment.
         # the environment is assumed to be a set of segments
-        if self.display_env.get() == 1:
-            drawing.draw_seg_environment(self.canvas, self.environment)
+        # if self.display_env.get() == 1:
+        #     drawing.draw_seg_environment(self.canvas, self.environment)
 
         # to display the LiDAR sensor measurements
         if self.display_lidar.get() == 1:
             # the LiDAR data is displayed according to the best particle's pose
             # note that to be displayed according to the best particle, it has to be defined...
-            if self.mcl.id_best_particle is None:
-                print("[Error !!] best particle not defined")
-                self.rb_lidar_none.select()
-            else:
-                drawing.draw_lidar_measurements(self.canvas, self.measurements, self.particle_to_draw.pose, self.map)
+            # if self.mcl.id_best_particle is None:
+            #     print("[Error !!] best particle not defined")
+            #     self.rb_lidar_none.select()
+            # else:
+            #     drawing.draw_lidar_measurements(self.canvas, self.measurements, self.particle_to_draw.pose, self.map)
+            pass
         elif self.display_lidar.get() == 2:
             # the LiDAR data is displayed according to the robot's pose
-            drawing.draw_lidar_measurements(self.canvas, self.measurements, self.robot.pose, self.map)
+            # drawing.draw_lidar_measurements(self.canvas, self.measurements, self.robot.pose, self.map)
+            pass
 
         # to draw the MCL particles
-        if self.display_particles.get() == 1:
-            drawing.draw_particles(self.canvas, self.robot, self.mcl, self.map)
+        # if self.display_particles.get() == 1:
+        #     drawing.draw_particles(self.canvas, self.robot, self.mcl, self.map)
 
         # to draw the actual robot
-        if self.display_robot.get() == 1:
-            drawing.draw_robot(self.canvas, self.robot, self.map)
+        # if self.display_robot.get() == 1:
+        #     drawing.draw_robot(self.canvas, self.robot, self.map)
 
     def btn_start_event(self, _):
         """ function called when pressing the start button
         PARAMETERS:
             _: (event) the button event that is not used here
         """
-        self.cost_map.compute_cost_map(self.map)
-        self.mcl.init_particles(self.cost_map, self.number_of_particles)
-        self.process_mcl = True
+        # self.cost_map.compute_cost_map(self.map)
+        # self.mcl.init_particles(self.cost_map, self.number_of_particles)
+        # self.process_mcl = True
 
-    def btn_test_event(self, _):
-        """ function called when pressing the test button
-        PARAMETERS:
-            _: (event) the button event that is not used here
-        """
-        # You can put some test code here!
-        # for instance:
-        self.cost_map.compute_cost_map(self.map)
-        if self.cost_map is not None:
-            print(self.cost_map.max_cost)  # must be 11
-            print(self.cost_map.evaluate_cost(Pose3D(2, 2, 0), self.measurements), ": must be 0")
-            print(self.cost_map.evaluate_cost(Pose3D(5, 2, 0), self.measurements), ": must be 4")
-            print(self.cost_map.evaluate_cost(Pose3D(2, 2, -3.14), self.measurements), ": must be 29")
-            print(self.cost_map.evaluate_cost(Pose3D(5, 4, 3.14 / 2), self.measurements), ": must be 75")
+    # def btn_test_event(self, _):
+    #     """ function called when pressing the test button
+    #     PARAMETERS:
+    #         _: (event) the button event that is not used here
+    #     """
+    #     # You can put some test code here!
+    #     # for instance:
+    #     self.cost_map.compute_cost_map(self.map)
+    #     if self.cost_map is not None:
+    #         print(self.cost_map.max_cost)  # must be 11
+    #         print(self.cost_map.evaluate_cost(Pose3D(2, 2, 0), self.measurements), ": must be 0")
+    #         print(self.cost_map.evaluate_cost(Pose3D(5, 2, 0), self.measurements), ": must be 4")
+    #         print(self.cost_map.evaluate_cost(Pose3D(2, 2, -3.14), self.measurements), ": must be 29")
+    #         print(self.cost_map.evaluate_cost(Pose3D(5, 4, 3.14 / 2), self.measurements), ": must be 75")
 
     def left_key(self, _):
         """ function called when pressing the left key
@@ -347,11 +349,11 @@ class Simulator:
         """
         flag = False
         while not flag:
-            self.robot.pose.x = uniform(0, self.map.width)
-            self.robot.pose.z = uniform(0, self.map.width)
+            # self.robot.pose.x = uniform(0, self.map.width)
+            # self.robot.pose.y = uniform(0, self.map.width)
             self.robot.pose.theta = uniform(0, 2 * pi)
             # test if the new position is OK for the robot
-            if 2 <= self.robot.pose.x <= 10 and 2 <= self.robot.pose.z <= 10:
+            if 2 <= self.robot.pose.x <= 10 and 2 <= self.robot.pose.y <= 10:
                 flag = True
         print("The robot has been kidnapped!")
 
