@@ -7,13 +7,11 @@ __email__ = "remy.guyonneau@univ-angers.fr"
     This file provides the main function for the MCL workshop program
 """
 
-from environment.seg_environment import SegEnv
 from environment.grid_map import GridMap
+from geometry.point import Point2D
 from parameters.parameters import Parameters
-from robot.lidar import LiDAR
 from tp_mcl.monte_carlo import Robot
-from robot.pose import Pose3D
-from tp_mcl.cost_map import CostMap
+from tp_mcl.pose import Pose3D
 # from tp_mcl.monte_carlo import MonteCarloLocalization
 from tp_mcl.simulator import Simulator
 
@@ -26,24 +24,21 @@ elif __name__ == "__main__":
 
     # environment = SegEnv()  # the simulated environment
     # environment.init_environment()
-    landmarks = [[], []]  # TODO(filip): define landmarks
+    # TODO(filip): define landmarks
 
     grid_map = GridMap()  # the known grid map of the environment
     grid_map.init_map()
-    grid_map.compute_map(environment)
 
     # mcl = MonteCarloLocalization()  # the Monte Carlo Localization Algorithm
 
     parameters = Parameters()
 
     setattr(parameters, "robot", robot)  # TODO(filip): fix
-    setattr(parameters, "environment", environment)
     setattr(parameters, "map", grid_map)
     setattr(parameters, "number_of_particles", 300)
     setattr(parameters, "percent_random_particles", 10)
     setattr(parameters, "fps", 20)
     setattr(parameters, "rk_step", 10)
-    # setattr(parameters, "mcl", mcl)
 
     # we start the simulator
     sim = Simulator(parameters)

@@ -9,8 +9,6 @@ __email__ = "remy.guyonneau@univ-angers.fr"
 from typing import List  # for python 3.8 compatibility
 
 from geometry.point import Point2D
-from geometry.segment import Segment2D
-from environment.seg_environment import SegEnv
 
 
 class GridCell:
@@ -78,34 +76,6 @@ class GridMap:
 
         self.size_x = self.width / self.nb_cell_x
         self.size_z = self.height / self.nb_cell_z
-
-    def compute_map(self, environment:SegEnv):
-        """ function to compute the map according to the environment
-            if the cell intersect a segment of the environment it is an obstacle (1)
-            PARAMETERS:
-                environment: (environment.seg_environment SegEnv) the environment we want to compute the grid map of
-        """
-        for line in self.cells:
-            for cell in line:
-                cell.val = 0.0
-                for segment in environment.segments:
-                    a = Point2D(cell.x * self.size_x, cell.z * self.size_z)
-                    b = Point2D((cell.x + 1) * self.size_x, cell.z * self.size_z)
-                    c = Point2D((cell.x + 1) * self.size_x, (cell.z + 1) * self.size_z)
-                    d = Point2D(cell.x * self.size_x, (cell.z + 1) * self.size_z)
-
-                    seg_ab = Segment2D(a, b)
-                    seg_bc = Segment2D(b, c)
-                    seg_cd = Segment2D(c, d)
-                    seg_da = Segment2D(d, a)
-
-                    inter_ab = Segment2D.intersect(seg_ab, segment)
-                    inter_bc = Segment2D.intersect(seg_bc, segment)
-                    inter_cd = Segment2D.intersect(seg_cd, segment)
-                    inter_da = Segment2D.intersect(seg_da, segment)
-
-                    if inter_ab[0] or inter_bc[0] or inter_cd[0] or inter_da[0]:
-                        cell.val = 1.0
 
     def __setitem__(self, key, value):
         if isinstance(key, tuple):

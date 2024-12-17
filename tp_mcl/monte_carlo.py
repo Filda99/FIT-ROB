@@ -17,7 +17,7 @@ from scipy.stats import norm
 
 from typing import List  # for python 3.8 compatibility
 
-from robot.pose import Pose3D
+from tp_mcl.pose import Pose3D
 import copy as copy
 
 class Robot:
@@ -28,6 +28,7 @@ class Robot:
     """
     pose: Pose3D
     weight: float
+    robot_width = 0.3
 
     turn_noise: float
     forward_noise: float
@@ -41,6 +42,8 @@ class Robot:
             pose = Pose3D()
         self.pose = copy.copy(pose)  # (robot.pose.Pose3D)  pose of the particle (x, z, theta) in meter
         self.weight = weight         # (number)   weight of the particle
+        self.turn_noise = 0.05
+        self.forward_noise = 0.05
 
     def __str__(self):
         """ to display a Particle as a string"""
@@ -72,15 +75,19 @@ class Robot:
         if forward < 0:
             raise Exception("can't move backwards")
 
-        self.pose.theta = self.pose.theta + turn + gauss(0.0, self.turn_noise)
-        self.pose.theta = self.pose.theta % (2 * math.pi)
+        if (turn != 0):
+            self.pose.theta = self.pose.theta + turn + gauss(0.0, self.turn_noise)
+            self.pose.theta = self.pose.theta % (2 * math.pi)
 
-        dist = forward + gauss(0.0, self.forward_noise)
+        dist = 0.0
+        if (forward > 0):
+            dist = forward + gauss(0.0, self.forward_noise)
+        
         self.pose.x = self.pose.x + (cos(self.pose.theta) * dist)
         self.pose.y = self.pose.y + (sin(self.pose.theta) * dist)
 
-        self.pose.x = self.pose.x % world_size
-        self.pose.y = self.pose.y % world_size
+        self.pose.x = self.pose.x % 800
+        self.pose.y = self.pose.y % 800
 
 
 # class MonteCarloLocalization:{{{
