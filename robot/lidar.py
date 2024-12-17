@@ -65,14 +65,14 @@ class LiDAR:
         measurements = []
         for step in range(-90, 91, 10):
             point_ext = Point2D(cos(pose.theta + step * pi / 180) * self.range + pose.x,
-                                sin(pose.theta + step * pi / 180) * self.range + pose.z)
-            distance = Point2D.distance(point_ext, Point2D(pose.x, pose.z))
+                                sin(pose.theta + step * pi / 180) * self.range + pose.y)
+            distance = Point2D.distance(point_ext, Point2D(pose.x, pose.y))
 
-            segment_sensor = Segment2D(Point2D(pose.x, pose.z), point_ext)
+            segment_sensor = Segment2D(Point2D(pose.x, pose.y), point_ext)
             for seg in environment.segments:
                 result, new_inter = Segment2D.intersect(segment_sensor, seg)
                 if result is True:
-                    new_distance = Point2D.distance(new_inter, Point2D(pose.x, pose.z))
+                    new_distance = Point2D.distance(new_inter, Point2D(pose.x, pose.y))
                     if new_distance < distance:
                         distance = new_distance
             if distance < self.range - 0.001:

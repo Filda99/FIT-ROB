@@ -91,17 +91,17 @@ class Robot:
             u: (list of two number in rad/s) the wheel speed commands [left, right]
         """
         # to estimate the derivative equation
-        k1xp, k1zp, k1_theta_p = self.f(self.pose.x, self.pose.z, self.pose.theta, delta_t, u)
-        k2xp, k2zp, k2_theta_p = self.f(self.pose.x + k1xp / 2, self.pose.z + k1zp / 2,
+        k1xp, k1zp, k1_theta_p = self.f(self.pose.x, self.pose.y, self.pose.theta, delta_t, u)
+        k2xp, k2zp, k2_theta_p = self.f(self.pose.x + k1xp / 2, self.pose.y + k1zp / 2,
                                         self.pose.theta + k1_theta_p / 2, delta_t, u)
-        k3xp, k3zp, k3_theta_p = self.f(self.pose.x + k2xp / 2, self.pose.z + k2zp / 2,
+        k3xp, k3zp, k3_theta_p = self.f(self.pose.x + k2xp / 2, self.pose.y + k2zp / 2,
                                         self.pose.theta + k2_theta_p / 2, delta_t, u)
-        k4xp, k4zp, k4_theta_p = self.f(self.pose.x + k3xp, self.pose.z + k3zp,
+        k4xp, k4zp, k4_theta_p = self.f(self.pose.x + k3xp, self.pose.y + k3zp,
                                         self.pose.theta + k3_theta_p, delta_t, u)
 
         # update of the robot's state (position and orientation)
         self.pose.x += (1 / 6.0) * (k1xp + 2 * k2xp + 2 * k3xp + k4xp)
-        self.pose.z += (1 / 6.0) * (k1zp + 2 * k2zp + 2 * k3zp + k4zp)
+        self.pose.y += (1 / 6.0) * (k1zp + 2 * k2zp + 2 * k3zp + k4zp)
         self.pose.theta += (1 / 6.0) * (k1_theta_p + 2 * k2_theta_p + 2 * k3_theta_p + k4_theta_p)
 
     def dynamics(self, delta_t, u):

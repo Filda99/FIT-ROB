@@ -64,9 +64,9 @@ class Simulator:
         self.rb_map = tk.Radiobutton(self.screen, text="Map",
                                      variable=self.map_to_display,
                                      value=1)
-        self.rb_cost_map = tk.Radiobutton(self.screen, text="Cost map",
-                                          variable=self.map_to_display,
-                                          value=2)
+        # self.rb_cost_map = tk.Radiobutton(self.screen, text="Cost map",
+                                          # variable=self.map_to_display,
+                                          # value=2)
         self.cb_env = tk.Checkbutton(self.screen, text="Environment",
                                      variable=self.display_env)
         self.cb_particles = tk.Checkbutton(self.screen, text="Particles",
@@ -86,7 +86,7 @@ class Simulator:
 
         # add the cb and rb to the window
         self.rb_map.pack(side='left')
-        self.rb_cost_map.pack(side='left')
+        # self.rb_cost_map.pack(side='left')
         self.cb_env.pack(side='left')
         self.cb_particles.pack(side='left')
         self.cb_robot.pack(side='left')
@@ -118,7 +118,7 @@ class Simulator:
             self.sensor = getattr(parameters, "sensor")
             self.environment = getattr(parameters, "environment")
             self.map = getattr(parameters, "map")
-            self.cost_map = getattr(parameters, "cost_map")
+            # self.cost_map = getattr(parameters, "cost_map")
             self.number_of_particles = getattr(parameters, "number_of_particles")
             self.percent_random_particles = getattr(parameters, "percent_random_particles")
             self.fps = getattr(parameters, "fps")
@@ -155,6 +155,7 @@ class Simulator:
             # display : new frame at each 100ms
             # delta_t : 1ms for the differential equation evaluation
             self.robot.dynamics(delta_t, self.cmd)
+# TODO(filip): based on arrow -> move position of robot
 
         # we update the measurement set according to the new robot's pose
         self.measurements = self.sensor.get_measurements(self.robot.pose, self.environment)
@@ -165,19 +166,25 @@ class Simulator:
             delta_theta = self.robot.pose.theta - old_pose.theta
             # we update the particles according to the odometry value
             self.mcl.estimate_from_odometry(delta_dst, delta_theta)
+
             # then we update the weight of the particles
-            self.mcl.evaluate_particles(self.cost_map, self.measurements)
+            # self.mcl.evaluate_particles(self.cost_map, self.measurements)
+
             # we re-sample the particle around the best ones
             self.mcl.re_sampling()
+
             # we re-evaluate the particles after re-sampling to display the colors correctly
             # this line could be avoided to be more efficient
-            self.mcl.evaluate_particles(self.cost_map, self.measurements)
+            # self.mcl.evaluate_particles(self.cost_map, self.measurements)
+
             # we add random particle to recover from kidnapping
             # the number corresponds to the percentage of random particle among all the particles
-            self.mcl.add_random_particles(self.cost_map, self.percent_random_particles)
+            # self.mcl.add_random_particles(self.cost_map, self.percent_random_particles)
+
             # if needed, we save the best particle to draw the measurement set
             if self.mcl.id_best_particle is not None:
                 self.particle_to_draw = self.mcl.particles[self.mcl.id_best_particle]
+
         self.cmd = [0, 0]
 
         # call the function that handles the display of the simulator

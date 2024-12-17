@@ -184,7 +184,7 @@ class TestMonteCarloLocalization(unittest.TestCase):
 
         for i in range(0, mcl.nb_particles):
             self.assertAlmostEqual(mcl.particles[i].pose.x, solution_1_0[i].x, 3)
-            self.assertAlmostEqual(mcl.particles[i].pose.z, solution_1_0[i].z, 3)
+            self.assertAlmostEqual(mcl.particles[i].pose.z, solution_1_0[i].y, 3)
             self.assertAlmostEqual(mcl.particles[i].pose.theta, solution_1_0[i].theta, 3)
 
         mcl.particles = []
@@ -213,7 +213,7 @@ class TestMonteCarloLocalization(unittest.TestCase):
 
         for i in range(0, mcl.nb_particles):
             self.assertAlmostEqual(mcl.particles[i].pose.x, solution_0_1[i].x, 3)
-            self.assertAlmostEqual(mcl.particles[i].pose.z, solution_0_1[i].z, 3)
+            self.assertAlmostEqual(mcl.particles[i].pose.z, solution_0_1[i].y, 3)
             self.assertAlmostEqual(mcl.particles[i].pose.theta, solution_0_1[i].theta, 3)
 
         mcl.particles = []
@@ -242,7 +242,7 @@ class TestMonteCarloLocalization(unittest.TestCase):
 
         for i in range(0, mcl.nb_particles):
             self.assertAlmostEqual(mcl.particles[i].pose.x, solution_2_3[i].x, 3)
-            self.assertAlmostEqual(mcl.particles[i].pose.z, solution_2_3[i].z, 3)
+            self.assertAlmostEqual(mcl.particles[i].pose.z, solution_2_3[i].y, 3)
             self.assertAlmostEqual(mcl.particles[i].pose.theta, solution_2_3[i].theta, 3)
 
         mcl.particles = []
@@ -271,7 +271,7 @@ class TestMonteCarloLocalization(unittest.TestCase):
 
         for i in range(0, mcl.nb_particles):
             self.assertAlmostEqual(mcl.particles[i].pose.x, solution_2_4[i].x, 3)
-            self.assertAlmostEqual(mcl.particles[i].pose.z, solution_2_4[i].z, 3)
+            self.assertAlmostEqual(mcl.particles[i].pose.z, solution_2_4[i].y, 3)
             self.assertAlmostEqual(mcl.particles[i].pose.theta, solution_2_4[i].theta, 3)
 
         print("[OK] Estimate from odometry")
