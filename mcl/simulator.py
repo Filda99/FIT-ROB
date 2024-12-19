@@ -66,6 +66,9 @@ class Simulator:
         # to call close_window when closing the window
         self.screen.protocol("WM_DELETE_WINDOW", self.close_window)
 
+        """ ***** Bind mouse click event ***** """
+        self.canvas.bind("<Button-1>", self.kidnap_robot)
+
         """ ***** Initialization of the parameters ***** """
         try:
             self.world_size = (WORLD_SIZE[0], WORLD_SIZE[1])
@@ -228,6 +231,18 @@ class Simulator:
         turn = 0.0
         self.move_particles(forward=forward, turn=turn)
         self.robot.move(forward=forward, turn=turn)
+
+
+    def kidnap_robot(self, event):
+        """
+            Method updates the robot's position based on the click coordinates.
+            Parameters:
+                event (tkinter.Event): The event object containing the click coordinates.
+        """
+        x_click = event.x * self.world_size[0] / self.canvas.winfo_width()
+        y_click = event.y * self.world_size[1] / self.canvas.winfo_height()
+        self.robot.set_pose(Pose3D(x_click, y_click, self.robot.pose.theta))
+        self.draw()
 
 
     def close_window(self):
