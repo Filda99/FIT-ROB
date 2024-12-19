@@ -12,10 +12,8 @@
 
 import math
 import tkinter as tk
-from datetime import datetime
 from math import pi
-from math import sqrt
-from random import sample, uniform, random
+from random import sample, random
 import copy as copy
 from mcl.pose import Pose3D
 from .global_vars import LANDMARKS
@@ -233,7 +231,7 @@ class Simulator:
         self.robot.move(forward=forward, turn=turn)
 
 
-    def kidnap_robot(self, event):
+    def kidnap_robot(self, event: tk.Event):
         """
             Method updates the robot's position based on the click coordinates.
             Parameters:
