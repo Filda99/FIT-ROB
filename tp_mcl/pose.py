@@ -1,16 +1,19 @@
-# coding: utf-8
-
-__author__ = "Remy Guyonneau"
-__license__ = "GPL"
-__email__ = "remy.guyonneau@univ-angers.fr"
 """
- This file provides a Pose class
+    Project: ROBa project
+    File: pose.py
+    Description: This file contains the Pose3D class and its associated methods for representing 3D poses in the robotics project.
+
+    Authors:
+        - Author 1: xstolf00, xstolf00@stud.fit.vutbr.cz
+        - Author 2: xjahnf00, xjahnf00@vutbr.cz
+
+    Date of Creation: 2024-12-19
 """
 
 
 class Pose3D:
     """ A class to handle a 3D pose (2D position and 1 orientation)
-        ATTRIBUTES:
+        Attributes:
             self.x: (number in m) the x position
             self.y: (number in m) the y position
             self.theta: (number in rad) the orientation
@@ -21,7 +24,7 @@ class Pose3D:
 
     def __init__(self, x: float = 0, y: float = 0, theta: float = 0):
         """ Constructor of the class
-        PARAMETERS:
+        Parameters:
             x: (number in m) the x position
             y: (number in m) the y position
             theta: (number in rad) the orientation

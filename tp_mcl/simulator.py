@@ -1,36 +1,43 @@
-# coding: utf-8
-
-__author__ = "Remy Guyonneau"
-__license__ = "GPL"
-__email__ = "remy.guyonneau@univ-angers.fr"
 """
-    This file provides the simulator for the MCL workshop
+    Project: ROBa project
+    File: simulator.py
+    Description: This file contains the main simulator logic for the robotics project.
+
+    Authors:
+        - Author 1: xstolf00, xstolf00@stud.fit.vutbr.cz
+        - Author 2: xjahnf00, xjahnf00@vutbr.cz
+
+    Date of Creation: 2024-12-19
 """
 
+import math
 import tkinter as tk
 from datetime import datetime
 from math import pi
 from math import sqrt
-from random import uniform
+from random import sample, uniform, random
 import copy as copy
+from geometry.point import Point2D
 from tp_mcl.pose import Pose3D
+from landmarks.landmarks import get_landmarks
 
 import drawing.drawing_functions as drawing
+from tp_mcl.global_vars import WORLD_SIZE
+from tp_mcl.monte_carlo import Robot
+
 
 
 """ ***** The simulator class ***** """
-
 
 class Simulator:
     """
     This class provides the simulator for the MCL workshop
     """
 
-    # Initialization of the class and the User Interface
     def __init__(self, parameters):
         """
         constructor of the class
-        PARAMETERS:
+        Parameters:
             parameters: (parameters.parameters.Parameters) the parameters of the simulator
         """
         # INITIALIZATION OF THE USER INTERFACE
@@ -59,116 +66,191 @@ class Simulator:
         # to call close_window when closing the window
         self.screen.protocol("WM_DELETE_WINDOW", self.close_window)
 
-        # INITIALIZATION OF THE PARAMETERS
+        # INITIALIZATION OF THE Parameters
         try:
-            self.robot = getattr(parameters, "robot")
+            self.world_size = (WORLD_SIZE[0], WORLD_SIZE[1])
+            self.robot: Robot = getattr(parameters, "robot")
             self.map = getattr(parameters, "map")
             self.number_of_particles = getattr(parameters, "number_of_particles")
+            self.particles: list[Robot] = self.init_particles()
+            self.landmarks = get_landmarks()
             self.percent_random_particles = getattr(parameters, "percent_random_particles")
             self.fps = getattr(parameters, "fps")
-            self.rk_step = getattr(parameters, "rk_step")
 
         except AttributeError as ae:
             print(ae)
             exit(0)
-        self.process_mcl = False
 
         self.particle_to_draw = None
 
-        # to update the simulator : dynamics value and redraw. This function loops over itself with the after() function
         self.update_simulator()
 
-        # main loop of the display window
         self.screen.mainloop()
 
-    # function to update the simulator (dynamical value and display)
+
     def update_simulator(self):
-        """ Function to update the dynamic of the simulator """
+        """
+        Update the dynamic of the simulator.
 
-        # FPS expressed in ms between 2 consecutive frame
-        delta_t = (1.0 / self.fps) / self.rk_step  # the time step for the computation of the robot state
+        This function performs the following steps:
+        1. Gets the measurements from the robot's sensors.
+        2. Calculates the weights of the particles based on the measurements.
+        3. Resamples the particles according to their weights.
+        4. Randomizes a specified number of particles.
+        5. Draws the updated state.
+        6. Schedules the next update.
+        """
 
-        old_pose = copy.copy(self.robot.pose)
-        # at each redisplay (new display frame)
-        #for _ in range(0, self.rk_step):
-            # we want the computation of the robot state to be faster than the
-            # display to limit the computation errors
-            # display : new frame at each 100ms
-            # delta_t : 1ms for the differential equation evaluation
-            # self.robot.move(delta_t, self.cmd)
-# TODO(filip): based on arrow -> move position of robot
-
-        # we update the measurement set according to the new robot's pose
-        # self.measurements = self.sensor.get_measurements(self.robot.pose, self.environment)
-        # processing the MCL algorithm
-        # first we approximate the odometry value (translation and rotation)
-        delta_dst = sqrt((self.robot.pose.x - old_pose.x) ** 2 + (self.robot.pose.y - old_pose.y) ** 2)
-        delta_theta = self.robot.pose.theta - old_pose.theta
-        # we update the particles according to the odometry value
-        # self.mcl.estimate_from_odometry(delta_dst, delta_theta)
-
-        # then we update the weight of the particles
-        # self.mcl.evaluate_particles(self.cost_map, self.measurements)
-
-        # we re-sample the particle around the best ones
-        # self.mcl.re_sampling()
-
-        # we re-evaluate the particles after re-sampling to display the colors correctly
-        # this line could be avoided to be more efficient
-        # self.mcl.evaluate_particles(self.cost_map, self.measurements)
-
-        # we add random particle to recover from kidnapping
-        # the number corresponds to the percentage of random particle among all the particles
-        # self.mcl.add_random_particles(self.cost_map, self.percent_random_particles)
-
-        # if needed, we save the best particle to draw the measurement set
-        # if self.mcl.id_best_particle is not None:
-        #     self.particle_to_draw = self.mcl.particles[self.mcl.id_best_particle]
-
-        self.cmd = [0, 0]
-
-        # call the function that handles the display of the simulator
+        # sensor model
+        z = self.robot.get_measurements(self.landmarks)
+        w = self.calculate_weights(z)
+        self.resample_particles(w)
+        # self.robot.pose = self.estimate_location() # robot location estimate based on particles
+        self.randomize_n_particles(100)  # TODO(filip): make optional
         self.draw()
+        self.screen.after(int(500 / self.fps), self.update_simulator)
 
-        # to call the update_simulator function again, after waiting a certain among of time
-        self.screen.after(int(1000 / self.fps), self.update_simulator)
+
+    def init_particles(self):
+        """
+        Initialize the particles.
+
+        This function creates a list of particles with random positions and orientations.
+        """
+        return [Robot(Pose3D(random() * self.world_size[0], random() * self.world_size[1], random() * 2 * math.pi)) for _ in range(self.number_of_particles)]
+
+
+    def calculate_weights(self, z: list[float]) -> list[float]:
+        """
+        Calculate the weights of the particles.
+
+        This function calculates the weights of the particles based on the measurement probabilities.
+
+        Parameters:
+            z (list[float]): The observed measurements.
+
+        Returns:
+            list[float]: The weights of the particles.
+        """
+        return [p.get_measurement_prob(z, self.landmarks) for p in self.particles]
+
+
+    def resample_particles(self, weights: list[float]):
+        """
+        Resample the particles according to the weights.
+
+        This function resamples the particles based on their weights to focus on the more likely particles.
+
+        Parameters:
+            weights (list[float]): The weights of the particles.
+        """
+        tmp_particles: list[Robot] = []
+        idx = int(random() * self.number_of_particles)
+        beta = 0.0
+        mw = max(weights)
+        for _ in range(self.number_of_particles):
+            beta += random() * 2.0 * mw
+            while (beta > weights[idx]):
+                beta -= weights[idx]
+                idx = int((idx + 1) % self.number_of_particles)
+            tmp_particles.append(copy.deepcopy(self.particles[idx]))  # NOTE: deepcopy is important -- otherwise particles will all become the same object
+        self.particles = tmp_particles
+
+
+    def randomize_n_particles(self, n: int):
+        """
+        Randomize n particles.
+
+        This function randomizes the positions and orientations of a specified number of particles.
+
+        Parameters:
+            n (int): The number of particles to randomize.
+        """
+        rnd_particles = sample(self.particles, n)
+        for p in rnd_particles:
+            p.set_pose(Pose3D(random() * self.world_size[0], random() * self.world_size[1], random() * 2 * math.pi))
+
+
+    def estimate_location(self) -> Pose3D:
+        """
+        Estimate the location of the robot.
+
+        This function estimates the location of the robot based on the particle with the highest weight.
+
+        Returns:
+            Pose3D: The estimated pose of the robot.
+        """
+        mp = max(self.particles, key=lambda x: x.weight)
+
+        return Pose3D(mp.pose.x, mp.pose.y, mp.pose.theta)
+
+
+    def move_particles(self, forward: float, turn: float):
+        """
+        Move the particles.
+
+        This function moves the particles based on the given forward and turn values.
+
+        Parameters:
+            forward (float): The forward movement.
+            turn (float): The turn movement.
+        """
+        return [p.move(forward=forward, turn=turn) for p in self.particles]
+
 
     def draw(self):
-        """ function to draw all the stuff"""
+        """
+        Draw all the elements.
+
+        This function draws the grid map, particles, robot, and landmarks on the canvas.
+        """
         self.canvas.delete("all")  # we start by removing the old display
 
         drawing.draw_grid_map(self.canvas, self.map)
        
-        # TODO: drawing.draw_particles(self.canvas, self.particles, self.map)
+        drawing.draw_particles(self.canvas, self.particles, self.map)
 
         drawing.draw_robot(self.canvas, self.robot, self.map)
 
         drawing.draw_landmarks(self.canvas, self.map)
 
+
     def left_key(self, _):
         """ function called when pressing the left key
-        PARAMETERS:
+        Parameters:
             _: (event) the event that is not used here
         """
-        self.robot.move(0.0, -0.1)
+        forward = 0.0
+        turn = -pi / 50
+        self.move_particles(forward=forward, turn=turn)
+        self.robot.move(forward=forward, turn=turn)
+
 
     def right_key(self, _):
         """ function called when pressing the right key
-        PARAMETERS:
+        Parameters:
             _: (event) the event that is not used here
         """
-        self.robot.move(0.0, 0.1)
+        forward = 0.0
+        turn = pi / 50
+        self.move_particles(forward=forward, turn=turn)
+        self.robot.move(forward=forward, turn=turn)
+
 
     def up_key(self, _):
         """ function called when pressing the up key
-        PARAMETERS:
+        Parameters:
             _: (event) the event that is not used here
         """
-        self.robot.move(0.1, 0.0)
+        forward = 0.1
+        turn = 0.0
+        self.move_particles(forward=forward, turn=turn)
+        self.robot.move(forward=forward, turn=turn)
+
 
     def i_key(self, _):
         """ function called when pressing the 'i' key
-        PARAMETERS:
+        Parameters:
             _: (event) the event that is not used here
         """
         flag = False
@@ -181,8 +263,10 @@ class Simulator:
                 flag = True
         print("The robot has been kidnapped!")
 
+
     def close_window(self):
         self.close_window_event(None)
+
 
     def close_window_event(self, _):
         self.screen.destroy()

@@ -1,10 +1,13 @@
-# coding: utf-8
-
-__author__ = "Remy Guyonneau"
-__license__ = "GPL"
-__email__ = "remy.guyonneau@univ-angers.fr"
 """
-    This file provides the Parameters class
+    Project: ROBa project
+    File: parameters.py
+    Description: This file contains the Parameters class and its associated methods for managing simulation parameters.
+
+    Authors:
+        - Author 1: xstolf00, xstolf00@stud.fit.vutbr.cz
+        - Author 2: xjahnf00, xjahnf00@vutbr.cz
+
+    Date of Creation: 2024-12-19
 """
 
 

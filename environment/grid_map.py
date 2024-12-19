@@ -20,7 +20,7 @@ class GridCell:
 
     def __init__(self, x:int=0, z:int=0, val:float=0):
         """ constructor of the class
-        PARAMETERS:
+        Parameters:
             x: (int) x coordinate of the cell in the map
             z: (int) z coordinate of the cell in the map
             val: (number) value of the cell (obstacle or free)
@@ -59,8 +59,8 @@ class GridMap:
     def init_map(self):
         """ function to initialize the map
         """
-        self.width = 12.0
-        self.height = 12.0
+        self.width = 80.0
+        self.height = 80.0
         self.nb_cell_x = 60
         self.nb_cell_z = 60
 
