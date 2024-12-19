@@ -45,7 +45,7 @@ class Robot:
     """
     pose: Pose3D
     weight: float
-    robot_width = 1
+    robot_width = 2
 
     def __init__(self, pose: Pose3D|None = None, weight: float = 0.0, noise: tuple[float, float, float] = (0.2, 0.05, 2.0)):
         """ constructor of the class

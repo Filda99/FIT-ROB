@@ -11,7 +11,7 @@
 """
 
 from math import cos, sin
-from landmarks.landmarks import get_landmarks
+from tp_mcl.global_vars import LANDMARKS
 
 
 def x_real_2_draw(canvas, x_real, world_dimension):
@@ -76,19 +76,12 @@ def draw_robot(canvas, robot, world_dimension):
             world_dimension: (should have width and height attributes) the world the robot is in
     """
 
-    """ ***** Drawing the body of the robot (circle) ***** """
-    x_left_top = x_real_2_draw(canvas, robot.pose.x - robot.robot_width, world_dimension)
-    y_left_top = y_real_2_draw(canvas, robot.pose.y - robot.robot_width, world_dimension)
-    x_right_bot = x_real_2_draw(canvas, robot.pose.x + robot.robot_width, world_dimension)
-    y_right_bot = y_real_2_draw(canvas, robot.pose.y + robot.robot_width, world_dimension)
-    canvas.create_oval(x_left_top, y_left_top, x_right_bot, y_right_bot, fill='grey', outline='black')
-
     """ ***** Drawing the arrow for the robot direction ***** """
     x_start = x_real_2_draw(canvas, robot.pose.x, world_dimension)
     y_start = y_real_2_draw(canvas, robot.pose.y, world_dimension)
     x_end = x_real_2_draw(canvas, robot.pose.x + cos(robot.pose.theta) * robot.robot_width, world_dimension)
     y_end = y_real_2_draw(canvas, robot.pose.y + sin(robot.pose.theta) * robot.robot_width, world_dimension)
-    canvas.create_line(x_start, y_start, x_end, y_end, fill='white', arrow='last')
+    canvas.create_line(x_start, y_start, x_end, y_end, fill='black', arrow='last')
 
 
 def draw_grid_map(canvas, grid_map):
@@ -143,5 +136,5 @@ def draw_particles(canvas, particles, world_dimension):
 
 def draw_landmarks(canvas, world_dimension):
     """ Function to draw the global landmarks as points. """
-    for landmark in get_landmarks():
+    for landmark in LANDMARKS:
         draw_point(canvas, landmark, size=0.3, color="red", world_dimension=world_dimension)

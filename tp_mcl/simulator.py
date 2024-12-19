@@ -17,9 +17,8 @@ from math import pi
 from math import sqrt
 from random import sample, uniform, random
 import copy as copy
-from geometry.point import Point2D
 from tp_mcl.pose import Pose3D
-from landmarks.landmarks import get_landmarks
+from .global_vars import LANDMARKS
 
 import drawing.drawing_functions as drawing
 from tp_mcl.global_vars import WORLD_SIZE
@@ -73,7 +72,7 @@ class Simulator:
             self.map = getattr(parameters, "map")
             self.number_of_particles = getattr(parameters, "number_of_particles")
             self.particles: list[Robot] = self.init_particles()
-            self.landmarks = get_landmarks()
+            self.landmarks = LANDMARKS
             self.percent_random_particles = getattr(parameters, "percent_random_particles")
             self.fps = getattr(parameters, "fps")
 
