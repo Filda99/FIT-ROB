@@ -19,6 +19,7 @@ from mcl.simulator import Simulator
 
 if __name__ == "__main__":
     robot = Robot(Pose3D(40, 40, 0))  # main robot
+    predicted_robot = Robot(Pose3D(40, 40, 0))  # predicted robot
 
     grid_map = GridMap()  # the known grid map of the environment
     grid_map.init_map()
@@ -26,6 +27,7 @@ if __name__ == "__main__":
     parameters = Parameters()
 
     setattr(parameters, "robot", robot)
+    setattr(parameters, "predicted_robot", predicted_robot)
     setattr(parameters, "map", grid_map)
     setattr(parameters, "number_of_particles", 1000)
     setattr(parameters, "percent_random_particles", 10)

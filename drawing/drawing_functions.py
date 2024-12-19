@@ -134,6 +134,17 @@ def draw_particles(canvas, particles, world_dimension):
         draw_point(canvas, particle.pose, size=0.1, color="grey", world_dimension=world_dimension)
 
 
+def draw_predicted_robot(canvas, robot, world_dimension):
+    """
+        Method to draw a predicted robot
+        Parameters:
+            canvas: (tkinter.Canvas) the display
+            robot: (robot.Robot) the robot to draw
+            world_dimension: (should have width and height attributes) the world the robot is in
+    """
+    draw_point(canvas, robot.pose, size=0.25, color="blue", world_dimension=world_dimension)
+
+
 def draw_landmarks(canvas, world_dimension):
     """
         Method draws the landmarks on the given Tkinter canvas based on their positions in the world frame.

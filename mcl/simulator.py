@@ -70,6 +70,7 @@ class Simulator:
         try:
             self.world_size = (WORLD_SIZE[0], WORLD_SIZE[1])
             self.robot: Robot = getattr(parameters, "robot")
+            self.predicted_robot: Robot = getattr(parameters, "predicted_robot")
             self.map = getattr(parameters, "map")
             self.number_of_particles = getattr(parameters, "number_of_particles")
             self.particles: list[Robot] = self.init_particles()
@@ -102,7 +103,7 @@ class Simulator:
         z = self.robot.get_measurements(self.landmarks)
         w = self.calculate_weights(z)
         self.resample_particles(w)
-        # self.robot.pose = self.estimate_location() # robot location estimate based on particles
+        self.predicted_robot.pose = self.estimate_location() # robot location estimate based on particles
         if self.randomize.get():
             self.randomize_n_particles(100)  # TODO(filip): make optional
         self.draw()
@@ -186,6 +187,7 @@ class Simulator:
         drawing.draw_grid_map(self.canvas, self.map)
        
         drawing.draw_particles(self.canvas, self.particles, self.map)
+        drawing.draw_predicted_robot(self.canvas, self.predicted_robot, self.map)
 
         drawing.draw_robot(self.canvas, self.robot, self.map)
 
