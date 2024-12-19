@@ -17,12 +17,12 @@ from math import pi
 from math import sqrt
 from random import sample, uniform, random
 import copy as copy
-from tp_mcl.pose import Pose3D
+from mcl.pose import Pose3D
 from .global_vars import LANDMARKS
 
 import drawing.drawing_functions as drawing
-from tp_mcl.global_vars import WORLD_SIZE
-from tp_mcl.monte_carlo import Robot
+from mcl.global_vars import WORLD_SIZE
+from mcl.monte_carlo import Robot
 
 
 class Simulator:
@@ -50,6 +50,12 @@ class Simulator:
         self.display_env = tk.IntVar()
         self.display_particles = tk.IntVar()
         self.display_robot = tk.IntVar()
+
+        # checkbox for randomizing the particles
+        self.randomize = tk.IntVar() # randomize the particles
+        self.cb_env = tk.Checkbutton(self.screen, text="Randomize",
+                                     variable=self.randomize)
+        self.cb_env.pack(side='left')
 
         """ ***** Handle some keyboard events ***** """
         self.screen.bind('<Left>', self.left_key)  # pad left arrow key
@@ -97,7 +103,8 @@ class Simulator:
         w = self.calculate_weights(z)
         self.resample_particles(w)
         # self.robot.pose = self.estimate_location() # robot location estimate based on particles
-        self.randomize_n_particles(100)  # TODO(filip): make optional
+        if self.randomize.get():
+            self.randomize_n_particles(100)  # TODO(filip): make optional
         self.draw()
         self.screen.after(int(500 / self.fps), self.update_simulator)
 
@@ -157,7 +164,6 @@ class Simulator:
                 Pose3D: The estimated pose of the robot.
         """
         mp = max(self.particles, key=lambda x: x.weight)
-
         return Pose3D(mp.pose.x, mp.pose.y, mp.pose.theta)
 
 

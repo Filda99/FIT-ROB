@@ -8,13 +8,14 @@
         - Author 2: xjahnf00, xjahnf00@vutbr.cz
 
     Date of Creation: 2024-12-19
+    NOTE: Some parts of the code was borowed from the following source: https://perso-laris.univ-angers.fr/~r.guyonneau/students/robotique_mobile/
 """
 
 from environment.grid_map import GridMap
 from parameters.parameters import Parameters
-from tp_mcl.monte_carlo import Robot
-from tp_mcl.pose import Pose3D
-from tp_mcl.simulator import Simulator
+from mcl.monte_carlo import Robot
+from mcl.pose import Pose3D
+from mcl.simulator import Simulator
 
 if __name__ == "__main__":
     robot = Robot(Pose3D(40, 40, 0))  # main robot

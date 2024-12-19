@@ -11,7 +11,7 @@
 """
 
 from math import cos, sin
-from tp_mcl.global_vars import LANDMARKS
+from mcl.global_vars import LANDMARKS
 
 
 def x_real_2_draw(canvas, x_real, world_dimension):
@@ -125,7 +125,7 @@ def draw_particles(canvas, particles, world_dimension):
         Parameters:
             canvas: (tkinter.Canvas) the display
             robot: (robot.robot.Robot) the robot the particles are evaluated the pose of
-            mcl: (tp_mcl.monte_carlo MonteCarloLocalization) The MonteCarloLocalization object we want to draw
+            mcl: (mcl.monte_carlo MonteCarloLocalization) The MonteCarloLocalization object we want to draw
             the particle of
             world_dimension: (should have width and height attributes) the world the measurements are defined in
     """

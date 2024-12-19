@@ -20,7 +20,7 @@ from random import uniform
 from scipy.stats import norm
 
 from geometry.point import Point2D
-from tp_mcl.pose import Pose3D
+from mcl.pose import Pose3D
 import copy as copy
 
 from .global_vars import WORLD_SIZE
