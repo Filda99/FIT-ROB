@@ -1,29 +1,36 @@
-# coding: utf-8
-
-__author__ = "Remy Guyonneau"
-__license__ = "GPL"
-__email__ = "remy.guyonneau@univ-angers.fr"
 """
-    This file provides a GridMap class and a GridCell class
+    Project: Robotics Lecture
+    File: grid_map.py
+    Description: This file contains the GridMap class and its associated methods for representing the environment's grid map.
+
+    Authors:
+        - Author 1: xstolf00, xstolf00@stud.fit.vutbr.cz
+        - Author 2: xjahnf00, xjahnf00@vutbr.cz
+
+    Date of Creation: 2024-12-19
 """
 from typing import List  # for python 3.8 compatibility
 
-from geometry.point import Point2D
-
 
 class GridCell:
-    """ class to handle a cell in the grid map
+    """ 
+        Class to handle a cell in the grid map.
+        Attributes:
+            x (int): The x coordinate of the cell in the map.
+            z (int): The z coordinate of the cell in the map.
+            val (float): The value of the cell (obstacle or free).
     """
     x: int      # (int) x coordinate of the cell in the map 
     z: int      # (int) z coordinate of the cell in the map
     val: float  # (float) value of the cell (obstacle or free)
 
     def __init__(self, x:int=0, z:int=0, val:float=0):
-        """ constructor of the class
-        Parameters:
-            x: (int) x coordinate of the cell in the map
-            z: (int) z coordinate of the cell in the map
-            val: (number) value of the cell (obstacle or free)
+        """
+            Constructor initializes the coordinates and value of the cell.
+            Parameters:
+                x (int): The x coordinate of the cell in the map.
+                z (int): The z coordinate of the cell in the map.
+                val (float): The value of the cell (obstacle or free).
         """
         self.x = x  # x coordinate of the cell in the map
         self.z = z  # y coordinate of the cell in the map
@@ -31,11 +38,16 @@ class GridCell:
 
 
 class GridMap:
-    """ class to handle a grid map
-
-    METHODS:
-        init_map()
-        def compute_map(environment)
+    """
+        Class to handle a grid map.
+        Attributes:
+            width (float): The width of the map in meters.
+            height (float): The height of the map in meters.
+            nb_cell_x (int): The number of cells along the x-axis.
+            nb_cell_z (int): The number of cells along the z-axis.
+            cells (List[List[GridCell]]): A list of lists of GridCell objects representing the map.
+            size_x (float): The size of a cell along the x-axis in meters.
+            size_z (float): The size of a cell along the z-axis in meters.
     """
     width: float           # (number in m)  the width of the map
     height: float          # (number in m) the height of the map
@@ -46,18 +58,20 @@ class GridMap:
     size_z: float          # (number in m) z size of a cell
 
     def __init__(self):
-        """ constructor of the class
         """
-        self.width = None  # m  the width of the map
-        self.height = None  # m  the height of the map
-        self.nb_cell_x = None  # -  number of cells according to the x-axis
-        self.nb_cell_z = None  # -  number of cells according to the z-axis
-        self.cells = None  # -  list of cells
-        self.size_x = None  # m  x size of a cell
-        self.size_z = None  # m  z size of a cell
+            Constructor initializes the attributes of the grid map.
+        """
+        self.width = 0  # m  the width of the map
+        self.height = 0  # m  the height of the map
+        self.nb_cell_x = 0  # -  number of cells according to the x-axis
+        self.nb_cell_z = 0  # -  number of cells according to the z-axis
+        self.cells = []  # -  list of cells
+        self.size_x = 0  # m  x size of a cell
+        self.size_z = 0  # m  z size of a cell
 
     def init_map(self):
-        """ function to initialize the map
+        """
+            Method sets the width and height of the map and initializes other attributes.
         """
         self.width = 80.0
         self.height = 80.0
@@ -76,17 +90,3 @@ class GridMap:
 
         self.size_x = self.width / self.nb_cell_x
         self.size_z = self.height / self.nb_cell_z
-
-    def __setitem__(self, key, value):
-        if isinstance(key, tuple):
-            li, col = key
-            self.cells[li][col] = value
-        else:
-            self.cells[key] = value
-
-    def __getitem__(self, key):
-        if isinstance(key, tuple):
-            li, col = key
-            return self.cells[li][col]
-        else:
-            return self.cells[key]

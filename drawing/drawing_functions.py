@@ -16,12 +16,12 @@ from tp_mcl.global_vars import LANDMARKS
 
 def x_real_2_draw(canvas, x_real, world_dimension):
     """
-        Function to convert an x value from the world frame to the display frame
+        Method to convert an x value from the world frame to the display frame
         Parameters:
             canvas: (tkinter.Canvas) the display
             x_real: (number in m) the x value in the world frame
             world_dimension: (should have width and height attributes) the world displayed int the canvas
-        RETURNS:
+        Returns:
             (number) the corresponding x value in the canvas frame
 
     """
@@ -30,12 +30,12 @@ def x_real_2_draw(canvas, x_real, world_dimension):
 
 def y_real_2_draw(canvas, y_real, world_dimension):
     """
-        Function to convert a z value from the world frame to the display frame
+        Method to convert a z value from the world frame to the display frame
         Parameters:
             canvas: (tkinter.Canvas) the display
             z_real: (number in m) the z value in the world frame
             world_dimension: (should have width and height attributes) the world displayed int the canvas
-        RETURNS:
+        Returns:
             (number) the corresponding z value in the canvas frame
     """
     return y_real * canvas.winfo_height() / world_dimension.height
@@ -43,12 +43,12 @@ def y_real_2_draw(canvas, y_real, world_dimension):
 
 def x_draw_2_real(canvas, x_draw, world_dimension):
     """
-        Function to convert an x value from the display frame to the world frame
+        Method to convert an x value from the display frame to the world frame
         Parameters:
             canvas: (tkinter.Canvas) the display
             x_draw: (number) the x value in the display frame
             world_dimension: (should have width and height attributes) the world displayed int the canvas
-        RETURNS:
+        Returns:
             (number) the corresponding x value in the world frame
     """
     return x_draw * world_dimension.width / canvas.winfo_width()
@@ -56,12 +56,12 @@ def x_draw_2_real(canvas, x_draw, world_dimension):
 
 def z_draw_2_real(canvas, y_draw, world_dimension):
     """
-        Function to convert a z value from the display frame to the world frame
+        Method to convert a z value from the display frame to the world frame
         Parameters:
             canvas: (tkinter.Canvas) the display
             z_draw: (number) the z value in the display frame
             world_dimension: (should have width and height attributes) the world displayed int the canvas
-        RETURNS:
+        Returns:
             (number) the corresponding z value in the world frame
     """
     return y_draw * world_dimension.height / canvas.winfo_height()
@@ -69,7 +69,7 @@ def z_draw_2_real(canvas, y_draw, world_dimension):
 
 def draw_robot(canvas, robot, world_dimension):
     """
-        Function to draw a robot
+        Method to draw a robot
         Parameters:
             canvas: (tkinter.Canvas) the display
             robot: (robot.Robot) the robot to draw
@@ -86,7 +86,7 @@ def draw_robot(canvas, robot, world_dimension):
 
 def draw_grid_map(canvas, grid_map):
     """
-        Function to draw a grid map
+        Method to draw a grid map
         Parameters:
             canvas: (tkinter.Canvas) the display
             grid_map: (environment.GridMap) the grid map to draw
@@ -104,7 +104,7 @@ def draw_grid_map(canvas, grid_map):
 
 def draw_point(canvas, point, size, color, world_dimension):
     """
-        Function to draw a point with coordinates in the world frame
+        Method to draw a point with coordinates in the world frame
         Parameters:
             canvas: (tkinter.Canvas) the display
             point: (geometry.point Point2D) the point to draw
@@ -121,7 +121,7 @@ def draw_point(canvas, point, size, color, world_dimension):
 
 def draw_particles(canvas, particles, world_dimension):
     """
-        Function to draw a set particles with pose in the world frame
+        Method to draw a set particles with pose in the world frame
         Parameters:
             canvas: (tkinter.Canvas) the display
             robot: (robot.robot.Robot) the robot the particles are evaluated the pose of
@@ -135,6 +135,12 @@ def draw_particles(canvas, particles, world_dimension):
 
 
 def draw_landmarks(canvas, world_dimension):
-    """ Function to draw the global landmarks as points. """
+    """
+        Method draws the landmarks on the given Tkinter canvas based on their positions in the world frame.
+        Parameters:
+            canvas (tkinter.Canvas): The canvas on which to draw the landmarks.
+            landmarks (list): A list of landmarks, where each landmark is represented by its coordinates.
+            world_dimension (object): An object representing the dimensions of the world, with width and height attributes.
+    """
     for landmark in LANDMARKS:
         draw_point(canvas, landmark, size=0.3, color="red", world_dimension=world_dimension)
