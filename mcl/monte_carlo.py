@@ -18,12 +18,13 @@ import math
 from random import gauss
 from random import uniform
 from scipy.stats import norm
+import numpy as np
 
 from geometry.point import Point2D
 from mcl.pose import Pose3D
 import copy as copy
 
-from .global_vars import WORLD_SIZE
+from .global_vars import LANDMARKS_NP, WORLD_SIZE
 
 
 class Noise:
@@ -133,8 +134,15 @@ class Robot:
             Returns:
                 float: The calculated measurement probability.
         """
-        pos = Point2D(self.pose.x, self.pose.y)
-        probs = [norm.pdf(x=measurements[i], loc=Point2D.distance(pos, l), scale=self.noise.sense_noise) for i,l in enumerate(landmarks)]
-        w: float = reduce(lambda x, y: x*y, probs, 1.0) # type: ignore
-        self.weight = w
-        return w
+        # pos = Point2D(self.pose.x, self.pose.y)
+        # probs = [norm.pdf(x=measurements[i], loc=Point2D.distance(pos, l), scale=self.noise.sense_noise) for i,l in enumerate(landmarks)]
+        # w: float = reduce(lambda x, y: x*y, probs, 1.0) # type: ignore
+        # return w
+
+        pos = np.array([self.pose.x, self.pose.y])
+        distances = np.linalg.norm(LANDMARKS_NP - pos, axis=1)
+
+        probs = norm.pdf(measurements, loc=distances, scale=self.noise.sense_noise)
+        w = np.prod(probs) 
+
+        return w # type: ignore

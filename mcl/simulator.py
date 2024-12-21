@@ -13,10 +13,11 @@
 import math
 import tkinter as tk
 from math import pi
-from random import sample, random
+from random import choices, sample, random
 import copy as copy
 from mcl.pose import Pose3D
 from .global_vars import LANDMARKS
+import numpy as np
 
 import drawing.drawing_functions as drawing
 from mcl.global_vars import WORLD_SIZE
@@ -86,6 +87,7 @@ class Simulator:
             exit(0)
 
         self.should_resample_mcl = 0;
+        self.resample_frame = 5;
 
         self.update_simulator()
         self.screen.mainloop()
@@ -104,26 +106,28 @@ class Simulator:
             6. Schedules the next update.
         """
 
-        if self.should_resample_mcl > 0:
+        self.resample_frame -= 1
+        if self.should_resample_mcl > 0 and self.resample_frame <= 0:
+            self.resample_frame = 5
             self.should_resample_mcl -= 1
 
             # sensor model
             z = self.robot.get_measurements(self.landmarks)
             w = self.calculate_weights(z)
-            self.resample_particles(w)
+            self.resample_particles(w) # type: ignore
             self.predicted_robot.pose = self.estimate_location() # robot location estimate based on particles
             if self.randomize.get():
                 self.randomize_n_particles(100)  # TODO(filip): make optional
 
         self.draw()
-        self.screen.after(int(500 / self.fps), self.update_simulator)
+        self.screen.after(int(1000 / self.fps), self.update_simulator)
 
 
     def init_particles(self):
         """
             Method creates a list of particles with random positions and orientations.
         """
-        return [Robot(Pose3D(random() * self.world_size[0], random() * self.world_size[1], random() * 2 * math.pi)) for _ in range(self.number_of_particles)]
+        return [Robot(Pose3D(random() * self.world_size[0], random() * self.world_size[1], random() * 2 * math.pi), weight=1/self.number_of_particles) for _ in range(self.number_of_particles)]
 
 
     def calculate_weights(self, z: list[float]) -> list[float]:
@@ -134,26 +138,23 @@ class Simulator:
             Returns:
                 list[float]: The weights of the particles.
         """
-        return [p.get_measurement_prob(z, self.landmarks) for p in self.particles]
+        ws = np.array([p.get_measurement_prob(z, self.landmarks) for p in self.particles])
+        return ws / np.sum(ws)
 
 
-    def resample_particles(self, weights: list[float]):
+    def resample_particles(self, weights: np.ndarray):
         """
             Method resamples the particles based on their weights to focus on the more likely particles.
             Parameters:
                 weights (list[float]): The weights of the particles.
         """
-        tmp_particles: list[Robot] = []
-        idx = int(random() * self.number_of_particles)
-        beta = 0.0
-        mw = max(weights)
-        for _ in range(self.number_of_particles):
-            beta += random() * 2.0 * mw
-            while (beta > weights[idx]):
-                beta -= weights[idx]
-                idx = int((idx + 1) % self.number_of_particles)
-            tmp_particles.append(copy.deepcopy(self.particles[idx]))  # NOTE: deepcopy is important -- otherwise particles will all become the same object
-        self.particles = tmp_particles
+        particles = np.array([np.array([p.pose.x, p.pose.y, p.pose.theta]) for p in self.particles])
+        sampled_rows = np.random.choice(particles.shape[0], size=self.number_of_particles, p=weights, replace=True)
+
+        sampled_particles = particles[sampled_rows]
+
+        self.particles = [Robot(Pose3D(p[0], p[1], p[2])) for p in sampled_particles]
+        return
 
 
     def randomize_n_particles(self, n: int):
