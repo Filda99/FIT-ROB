@@ -99,9 +99,8 @@ class Robot:
         if forward < 0:
             raise Exception("can't move backwards")
 
-        if (turn != 0):
-            self.pose.theta = self.pose.theta + turn + gauss(0.0, self.noise.turn_noise)
-            self.pose.theta = self.pose.theta % (2 * math.pi)
+        self.pose.theta = self.pose.theta + turn + gauss(0.0, self.noise.turn_noise)
+        self.pose.theta = self.pose.theta % (2 * math.pi)
 
         dist = 0.0
         if (forward > 0):
