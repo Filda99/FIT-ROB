@@ -22,6 +22,8 @@ import drawing.drawing_functions as drawing
 from mcl.global_vars import WORLD_SIZE
 from mcl.monte_carlo import Robot
 
+NUM_EXTRA_MCL_ITERATIONS = 5
+
 
 class Simulator:
     """
@@ -83,6 +85,8 @@ class Simulator:
             print(ae)
             exit(0)
 
+        self.should_resample_mcl = 0;
+
         self.update_simulator()
         self.screen.mainloop()
 
@@ -100,13 +104,17 @@ class Simulator:
             6. Schedules the next update.
         """
 
-        # sensor model
-        z = self.robot.get_measurements(self.landmarks)
-        w = self.calculate_weights(z)
-        self.resample_particles(w)
-        self.predicted_robot.pose = self.estimate_location() # robot location estimate based on particles
-        if self.randomize.get():
-            self.randomize_n_particles(100)  # TODO(filip): make optional
+        if self.should_resample_mcl > 0:
+            self.should_resample_mcl -= 1
+
+            # sensor model
+            z = self.robot.get_measurements(self.landmarks)
+            w = self.calculate_weights(z)
+            self.resample_particles(w)
+            self.predicted_robot.pose = self.estimate_location() # robot location estimate based on particles
+            if self.randomize.get():
+                self.randomize_n_particles(100)  # TODO(filip): make optional
+
         self.draw()
         self.screen.after(int(500 / self.fps), self.update_simulator)
 
@@ -203,6 +211,7 @@ class Simulator:
         """
         forward = 0.0
         turn = -pi / 50
+        self.should_resample_mcl = NUM_EXTRA_MCL_ITERATIONS
         self.move_particles(forward=forward, turn=turn)
         self.robot.move(forward=forward, turn=turn)
 
@@ -215,6 +224,7 @@ class Simulator:
         """
         forward = 0.0
         turn = pi / 50
+        self.should_resample_mcl = NUM_EXTRA_MCL_ITERATIONS
         self.move_particles(forward=forward, turn=turn)
         self.robot.move(forward=forward, turn=turn)
 
@@ -227,6 +237,7 @@ class Simulator:
         """
         forward = 0.1
         turn = 0.0
+        self.should_resample_mcl = NUM_EXTRA_MCL_ITERATIONS
         self.move_particles(forward=forward, turn=turn)
         self.robot.move(forward=forward, turn=turn)
 
