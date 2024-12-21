@@ -133,11 +133,6 @@ class Robot:
             Returns:
                 float: The calculated measurement probability.
         """
-        # pos = Point2D(self.pose.x, self.pose.y)
-        # probs = [norm.pdf(x=measurements[i], loc=Point2D.distance(pos, l), scale=self.noise.sense_noise) for i,l in enumerate(landmarks)]
-        # w: float = reduce(lambda x, y: x*y, probs, 1.0) # type: ignore
-        # return w
-
         pos = np.array([self.pose.x, self.pose.y])
         distances = np.linalg.norm(LANDMARKS_NP - pos, axis=1)
 
