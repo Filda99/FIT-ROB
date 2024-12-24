@@ -8,6 +8,8 @@ Monte Carlo Localization is a probabilistic algorithm used to determine the posi
 
 ## How to Run the Program
 
+Install the dependencies listed in `requirements.txt` into your environment.
+
 To run the main program, use the following command:
 ```sh
 python3 main_mcl.py
